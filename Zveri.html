@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звери во дворе 15 и 19 домов</title>
+    <!-- Новая иконка сайта (favicon) -->
+    <link rel="icon" href="https://s1.radikal.cloud/2026/02/24/LYGUKea27c4635ed12e93.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f4f7fb;
+            color: #1d2c41;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Шапка с логотипом */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .logo-title img {
+            height: 60px;
+            width: auto;
+            border-radius: 20px;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #2d4f2d, #1b3b4f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .subtitle-block {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 0.7rem 2rem;
+            margin: 0.5rem auto;
+            max-width: fit-content;
+            border: 1px solid #ffffffaa;
+            box-shadow: 0 4px 12px rgba(0, 20, 10, 0.1);
+        }
+
+        .subtitle-block:first-of-type {
+            margin-top: 1rem;
+        }
+
+        .subtitle-block p {
+            font-size: 1.2rem;
+            color: #2e4a6b;
+            font-weight: 500;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 36px;
+            box-shadow: 0 20px 30px -10px rgba(27, 46, 65, 0.2);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #deecf5;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 28px 38px -12px rgba(17, 55, 80, 0.25);
+        }
+
+        /* Блок с фотографией / картой */
+        .card-map {
+            height: 240px;
+            background-color: #c1d9e8;
+            background-size: cover;
+            background-position: center 30%;
+            position: relative;
+            border-bottom: 3px solid #ffffffaa;
+        }
+
+        /* Изображения для медведя и лягушки */
+        .card-map.bear {
+            background-image: url('https://avatars.mds.yandex.net/get-altay/9793917/2a0000018d8350f8646f2e5dbe721f30e2d8/XXXL');
+        }
+        .card-map.frog {
+            background-image: url('https://avatars.mds.yandex.net/get-altay/14664328/2a000001970161ff738f0e384b1cdb96b2ef/XXXL');
+        }
+        /* Для черепахи убираем фон и делаем заглушку */
+        .card-map.turtle {
+            background: #b6a28e; /* приятный землистый фон */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .turtle-soon {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffffdd;
+            text-shadow: 0 4px 10px #3d2e1e;
+            background: #00000030;
+            backdrop-filter: blur(2px);
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            border: 2px dashed #ffffffb0;
+            letter-spacing: 4px;
+        }
+
+        /* Резервные стили для медведя и лягушки, если фото не загрузятся */
+        .card-map.bear.fallback, .card-map.bear:not(.loaded) {
+            background-image: linear-gradient(145deg, #8d6b4f, #b99e7c), repeating-linear-gradient(45deg, #ffffff20 0px, #ffffff20 15px, #00000010 15px, #00000010 30px);
+            background-blend-mode: overlay;
+        }
+        .card-map.frog.fallback, .card-map.frog:not(.loaded) {
+            background-image: linear-gradient(145deg, #5f8b5f, #8fb38f), repeating-radial-gradient(circle at 30% 40%, #ffffff30 5px, transparent 10px);
+            background-blend-mode: soft-light;
+        }
+
+        .pin-badge {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: #ffffffdd;
+            backdrop-filter: blur(6px);
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #c53131;
+            box-shadow: 0 4px 12px #0000001a;
+            border: 1px solid white;
+            z-index: 2;
+        }
+        .pin-badge::before {
+            content: "📍";
+            margin-right: 4px;
+        }
+
+        .card-content {
+            padding: 1.8rem 1.5rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.8rem;
+        }
+        .rating-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2a6b2a;
+        }
+        .stars {
+            color: #f5b342;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+        }
+
+        /* Блок .genre полностью удалён */
+
+        .address {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #eef6ff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            margin-bottom: 1.2rem;
+            border: 1px solid #c6daf0;
+            font-size: 0.95rem;
+        }
+
+        .map-link {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #1e4f6b;
+            color: white;
+            text-decoration: none;
+            padding: 0.9rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.15s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 8px 20px #1e4f6b40;
+            font-size: 1rem;
+        }
+        .map-link:hover {
+            background: #123b50;
+            transform: scale(1.02);
+            box-shadow: 0 12px 24px #123b5060;
+        }
+
+        /* Блок единства двора (бывший unity-section) */
+        .unity-section {
+            background: white;
+            border-radius: 48px;
+            padding: 2rem 2rem 2rem 2.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 12px 28px #d9e2ed;
+            border: 1px solid #cbdbea;
+        }
+        .unity-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2rem;
+            font-weight: 650;
+            color: #1e4f4f;
+            margin-bottom: 1rem;
+        }
+        .unity-text {
+            font-size: 1.1rem;
+            color: #273b4e;
+            margin-bottom: 1.8rem;
+            padding-left: 0.8rem;
+            border-left: 5px solid #6fa3cf;
+        }
+        .mini-legend {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            background: #e2ecf9;
+            border-radius: 60px;
+            padding: 0.8rem 2rem;
+            width: fit-content;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1rem;
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+        .dot-bear { background: #8B5A2B; }
+        .dot-frog { background: #2E7D32; }
+        .dot-turtle { background: #B76E42; }
+
+        /* Новый блок историй (аккордеон) */
+        .stories-section {
+            background: white;
+            border-radius: 48px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 12px 28px #d9e2ed;
+            border: 1px solid #cbdbea;
+        }
+
+        .stories-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e4f4f;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .story details {
+            margin-bottom: 1.2rem;
+            border: 1px solid #d4e2f0;
+            border-radius: 40px;
+            padding: 0.5rem 1.5rem;
+            background: #f9fcff;
+            transition: all 0.2s;
+        }
+
+        .story details[open] {
+            background: #ffffff;
+            box-shadow: 0 8px 18px #c9d9eb;
+        }
+
+        .story summary {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1d3f5c;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 0;
+        }
+
+        .story summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .story summary::before {
+            content: "📖";
+            font-size: 1.8rem;
+            transition: transform 0.2s;
+        }
+
+        .story details[open] summary::before {
+            content: "📖";
+        }
+
+        .story-content {
+            padding: 0.5rem 0 1.5rem 1rem;
+            font-size: 1.1rem;
+            color: #2c4056;
+            border-top: 2px dashed #b7d0e8;
+        }
+
+        .story-content img {
+            max-width: 100%;
+            border-radius: 30px;
+            margin: 1.2rem 0 0.5rem;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+            border: 3px solid white;
+        }
+
+        .photo-caption {
+            font-size: 0.9rem;
+            color: #4f658a;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #4f607a;
+            font-size: 0.9rem;
+        }
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #b0cbe5, transparent);
+            margin: 2rem 0 1rem 0;
+        }
+
+        @media (max-width: 650px) {
+            .logo-title h1 { font-size: 2rem; }
+            .logo-title img { height: 45px; }
+            .card-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка с новой иконкой (логотипом) -->
+        <div class="header">
+            <div class="logo-title">
+                <img src="https://s1.radikal.cloud/2026/02/24/LYGUKea27c4635ed12e93.png" alt="Лягушка-логотип">
+                <h1>🐻 Звери во дворе 15 и 19 домов 🐢</h1>
+            </div>
+            <div class="subtitle-block">
+                <p>улица Марии Ульяновой, 15, Москва</p>
+            </div>
+            <div class="subtitle-block">
+                <p>🚇 метро Новаторская, 8 выход</p>
+            </div>
+        </div>
+
+        <!-- Карточки зверей -->
+        <div class="cards-grid">
+            <!-- Медведь -->
+            <div class="card">
+                <div class="card-map bear" id="bear-map">
+                    <div class="pin-badge">Яндекс Карты</div>
+                </div>
+                <div class="card-content">
+                    <div class="card-title"><span>🐻</span> Медведь</div>
+                    <div class="rating"><span class="rating-value">4.7</span> <span class="stars">★★★★★</span></div>
+                    <!-- адрес изменён -->
+                    <div class="address"><i>📍</i> двор - улица Марии Ульяновой, 15</div>
+                    <a href="https://yandex.ru/maps/-/CPeF6Yzm" class="map-link" target="_blank" rel="noopener noreferrer"><i>🗺️</i> Открыть карту медведя</a>
+                </div>
+            </div>
+
+            <!-- Лягушка -->
+            <div class="card">
+                <div class="card-map frog" id="frog-map">
+                    <div class="pin-badge">Яндекс Карты</div>
+                </div>
+                <div class="card-content">
+                    <div class="card-title"><span>🐸</span> Лягушка</div>
+                    <div class="rating"><span class="rating-value">4.5</span> <span class="stars">★★★★☆</span></div>
+                    <!-- адрес изменён -->
+                    <div class="address"><i>📍</i> двор - улица Марии Ульяновой, 19</div>
+                    <a href="https://yandex.ru/maps/-/CPeF6GlY" class="map-link" target="_blank" rel="noopener noreferrer"><i>🗺️</i> Открыть карту лягушки</a>
+                </div>
+            </div>
+
+            <!-- Черепаха с заглушкой "Скоро будет" -->
+            <div class="card">
+                <div class="card-map turtle">
+                    <div class="pin-badge">Яндекс Карты</div>
+                    <div class="turtle-soon">СКОРО БУДЕТ</div>
+                </div>
+                <div class="card-content">
+                    <div class="card-title"><span>🐢</span> Черепаха</div>
+                    <div class="rating"><span class="rating-value">4.3</span> <span class="stars">★★★★☆</span></div>
+                    <!-- адрес изменён -->
+                    <div class="address"><i>📍</i> двор - улица Марии Ульяновой, 19</div>
+                    <a href="https://yandex.ru/maps/-/CPeF6D2P" class="map-link" target="_blank" rel="noopener noreferrer"><i>🗺️</i> Открыть карту черепахи</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Общий блок про дворик (бывший unity-section) -->
+        <div class="unity-section">
+            <div class="unity-title"><i>🏡</i> Двор 15 и 19 домов</div>
+            <div class="unity-text">
+                Все три скульптуры находятся в одном дворе между домами 15 и 19 на улице Марии Ульяновой. 
+                Медведь, Лягушка и Черепаха — настоящие соседи. Рейтинги собраны с Яндекс Карт.
+            </div>
+            <div class="mini-legend">
+                <span class="legend-item"><span class="legend-dot dot-bear"></span> Медведь 4.7</span>
+                <span class="legend-item"><span class="legend-dot dot-frog"></span> Лягушка 4.5</span>
+                <span class="legend-item"><span class="legend-dot dot-turtle"></span> Черепаха 4.3</span>
+            </div>
+        </div>
+
+        <!-- НОВЫЙ БЛОК С ИСТОРИЯМИ (АККОРДЕОН) -->
+        <div class="stories-section">
+            <div class="stories-title"><span>📜</span> Истории и легенды двора</div>
+            <div class="story">
+                <!-- История зверей -->
+                <details>
+                    <summary>История зверей</summary>
+                    <div class="story-content">
+                        <p>Эти звери впервые появились во дворе домов 17к3 и 9к1 на детской площадке и помимо трёх зверей там был ещё и крокодил. Он запечатлён на одном из немногих общедоступных фото из Яндекса:</p>
+                        <img src="https://s1.radikal.cloud/2026/02/24/ZVERI1c0c091b4c3a429f7.png" alt="Крокодил во дворе" style="max-width:100%; border-radius:30px;">
+                        <div class="photo-caption">Тот самый крокодил, который не дожил до благоустройства</div>
+                        <p>Но после благоустройства нашего 18-го квартала он пропал. Жителям 19-го дома удалось согласовать перемещение зверей в этот двор. Теперь за ними следят и ухаживают.</p>
+                    </div>
+                </details>
+                <!-- Легенда о наших зверях -->
+                <details>
+                    <summary>Легенда о наших зверях</summary>
+                    <div class="story-content">
+                        <p>В 2024 году звери были добавлены на Яндекс Карты. Теперь в отзывах на лягушку кто-то придумывает странные легенды, которые конечно же, не правдивые: якобы для удачи или исполнений желаний влюблённых, надо обнять лягушку и сказать "Лягушка ква-ква, счастья нам квадари", а для богатства - "почешу лягушке лапки, значит завтра будут бабки".</p>
+                        <p>Удивляет то, что уже не первый человек пишет об этом в отзывах.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <hr>
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; color: #2f4a6a;">
+            <span>🐻 Медведь: 4.7 (д. 15)</span>
+            <span>🐸 Лягушка: 4.5 (д. 19)</span>
+            <span>🐢 Черепаха: 4.3 (д. 19) — скоро фото</span>
+        </div>
+
+        <div class="footer">
+            Скульптуры во дворе на ул. Марии Ульяновой • м. Новаторская • 2026
+        </div>
+    </div>
+
+    <!-- Скрипт для обработки ошибок загрузки фото медведя и лягушки -->
+    <script>
+        (function() {
+            function addFallback(imgUrl, mapDiv) {
+                const testImg = new Image();
+                testImg.src = imgUrl;
+                testImg.crossOrigin = 'anonymous';
+                testImg.onload = () => mapDiv.classList.add('loaded');
+                testImg.onerror = () => {
+                    mapDiv.classList.remove('loaded');
+                    mapDiv.style.backgroundImage = 'none';
+                };
+            }
+
+            const bearMap = document.getElementById('bear-map');
+            const frogMap = document.getElementById('frog-map');
+            if (bearMap) {
+                bearMap.classList.add('loaded');
+                addFallback('https://avatars.mds.yandex.net/get-altay/9793917/2a0000018d8350f8646f2e5dbe721f30e2d8/XXXL', bearMap);
+            }
+            if (frogMap) {
+                frogMap.classList.add('loaded');
+                addFallback('https://avatars.mds.yandex.net/get-altay/14664328/2a000001970161ff738f0e384b1cdb96b2ef/XXXL', frogMap);
+            }
+            // Для черепахи скрипт не нужен, т.к. у неё статичная заглушка
+        })();
+    </script>
+</body>
+</html>
